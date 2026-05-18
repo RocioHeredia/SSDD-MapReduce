@@ -1,29 +1,55 @@
 # Usando Map y Reduce. Resolver el problema de contar palabras
-from functools import reduce
 
-texto= "Hola mundo, este es un ejemplo de contar palabras usando Map y Reduce en Python. Map y Reduce son funciones de orden superior que se utilizan para procesar colecciones de datos. Map aplica una función a cada elemento de una colección, mientras que Reduce aplica una función acumulativa a los elementos de una colección para reducirla a un solo valor."
 
-# Limpiar el texto de signos de puntuación y convertirlo a minúsculas
-texto_limpio = texto.lower().replace(",", "").replace(".", "").replace("¿", "").replace("?", "") 
 
-# Dividir el texto en palabras y guardar en una lista
-palabras = texto_limpio.split()
+from collections import defaultdict
 
-# Usar Map para contar cada palabra
-pares= list(map(lambda x: (x, 1), palabras))
+# Función map
 
-# Usar Reduce para sumar los conteos de cada palabra
-def reducer (acumulador, elemento):
-    palabra, conteo = elemento
-    acumulador[palabra] = acumulador.get(palabra, 0) + conteo
-    return acumulador
+def map_function(text):
+    resultado = []
 
-conteo_palabras = reduce(reducer, pares, {})
+    # Separar palabras y pasarlas a minúsculas
+    words = text.lower().split()
 
-# Imprimir el resultado
-print("Texto original: ", texto)
-print(" \n Lista de palabras: ", palabras)
-print(" \n Conteo de palabras: ")
+    # (palabra, 1)
+    for word in words:
+        resultado.append((word, 1))
 
-for palabra, conteo in sorted(conteo_palabras.items()):
-    print(f"{palabra}: {conteo}")
+    #Ordenar por palabra
+    resultado.sort(key=lambda x: x[0])
+    
+    return resultado
+
+# Función reduce
+
+def reduce_function(mapped_data):
+    grouped = defaultdict(list)
+
+    # Agrupar valores por clave
+    for word, count in mapped_data:
+        grouped[word].append(count)
+
+    reduced = {}
+
+    # Sumar los valores de cada palabra
+    for word, counts in grouped.items():
+        reduced[word] = sum(counts)
+
+    return reduced
+
+# Ejemplo de uso
+Texto = "hola mundo hola python hola map reduce desde python"
+
+mapped_results = map_function(Texto)
+
+print("\n ")
+print("Resultado al aplicar Map:")
+print(mapped_results)
+
+final_result = reduce_function(mapped_results)
+
+print("\nResultado al aplicar Reduce:")
+for word, total in final_result.items():
+    print(word, "->", total)
+print("\n ")
